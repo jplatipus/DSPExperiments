@@ -3,35 +3,60 @@
 
 #include <iostream>
 #include "Convolution.h"
+#include "FourrierTransform.h"
 
-int main()
+void testConvolution()
 {
-    std::cout << "Hello World!\n";
-    double input[] = { 0.0, -1.0, -1.25, 2.0, 1.5, 1.5, 0.75, 0, -0.75};
+    std::cout << "Running Convolution Test\n";
+    double input[] = { 0.0, -1.0, -1.25, 2.0, 1.5, 1.5, 0.75, 0, -0.75 };
     double impulse[] = { 1.0, -0.5, -0.25, -0.0 };
     double* output = nullptr;
 
-        Convolution inc = Convolution(input, 9, impulse, 4);
-        inc.convoluteInputSide();
-        int outputLen = inc.getConvolutedOutLen();
-        output = inc.getConvolutedOutput();
-        printf("input side convolution =  {\n\t");
-        for (int index = 0; index < outputLen; index++) {
-            printf("%0.02f, ", *output);
-            output++;
-        }
-        printf("\n}\n");
+    Convolution inc = Convolution(input, 9, impulse, 4);
+    inc.convoluteInputSide();
+    int outputLen = inc.getConvolutedOutLen();
+    output = inc.getConvolutedOutput();
+    printf("input side convolution =  {\n\t");
+    for (int index = 0; index < outputLen; index++) {
+        printf("%0.02f, ", *output);
+        output++;
+    }
+    printf("\n}\n");
 
-        Convolution outc = Convolution(input, 9, impulse, 4);
-        outc.convoluteOutputSide();
-        outputLen = outc.getConvolutedOutLen();
-        output = outc.getConvolutedOutput();
-        printf("output side convolution =  {\n\t");
-        for (int index = 0; index < outputLen; index++) {
-            printf("%0.02f, ", *output);
-            output++;
-        }
-        printf("\n}\n");
+    Convolution outc = Convolution(input, 9, impulse, 4);
+    outc.convoluteOutputSide();
+    outputLen = outc.getConvolutedOutLen();
+    output = outc.getConvolutedOutput();
+    printf("output side convolution =  {\n\t");
+    for (int index = 0; index < outputLen; index++) {
+        printf("%0.02f, ", *output);
+        output++;
+    }
+    printf("\n}\n");
+}
+
+void testFourrierTransform()
+{
+    double reX[] = { 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0 };
+    double imX[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    FourrierTransform ft = FourrierTransform();
+    ft.inverseTransform(reX, 17, imX, 17);
+    double *x = ft.getTimeDomainX();
+    int xLen = ft.getTimeDomainXLen();
+    printf("inverse transform =  {\n\t");
+    for (int index = 0; index < xLen; index++) {
+        printf("%0.02f, ", *x);
+        x++;
+    }
+    printf("\n}\n");
+}
+
+
+int main()
+{
+    testFourrierTransform();
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

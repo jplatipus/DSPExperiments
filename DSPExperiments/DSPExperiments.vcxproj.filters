@@ -21,9 +21,15 @@
     <ClCompile Include="Convolution.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FourrierTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Convolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FourrierTransform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

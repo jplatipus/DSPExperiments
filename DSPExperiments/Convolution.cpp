@@ -5,6 +5,10 @@
  Steven W. Smith, chapter 7
 
 */
+	/*
+	* Allocates and copies arguments to members.
+	* TODO: use memcpy to copy array arguments instead of for loops
+	*/
 	Convolution::Convolution(double* inputSignal, int inputSignalLen, double* impulse, int impulseLen)
 	{
 		this->inputSignal = new double[inputSignalLen];
@@ -24,6 +28,9 @@
 		}
 	}
 
+	/*
+	* clears allocated pointer members.
+	*/
 	Convolution::~Convolution() {
 		delete this->inputSignal;
 		delete this->impulse;
@@ -63,6 +70,9 @@
 		}
 	}
 
+	/*
+	return output signal array: the pointer's lifetime is the same as the class instance's
+	*/
 	double* Convolution::getConvolutedOutput() {
 		return outputSignal;
 	}

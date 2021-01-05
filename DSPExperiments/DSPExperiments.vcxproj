@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClCompile Include="DSPExperiments.cpp" />
     <ClCompile Include="Convolution.cpp" />
+    <ClCompile Include="FourrierTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Convolution.h" />
+    <ClInclude Include="FourrierTransform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
