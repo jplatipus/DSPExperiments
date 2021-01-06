@@ -40,14 +40,32 @@ void testFourrierTransform()
     double reX[] = { 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0 };
     double imX[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-    FourrierTransform ft = FourrierTransform();
-    ft.inverseTransform(reX, 17, imX, 17);
-    double *x = ft.getTimeDomainX();
-    int xLen = ft.getTimeDomainXLen();
+    FourrierTransform ift = FourrierTransform();
+    ift.inverseTransform(reX, 17, imX, 17);
+    double *x = ift.getTimeDomainX();
+    int xLen = ift.getTimeDomainXLen();
     printf("inverse transform =  {\n\t");
     for (int index = 0; index < xLen; index++) {
         printf("%0.02f, ", *x);
         x++;
+    }
+    printf("\n}\n");
+
+    FourrierTransform ft = FourrierTransform();
+    ft.discreteTransform(ift.getTimeDomainX(), ift.getTimeDomainXLen());
+    double *realCosines = ft.getRealConsinesX();
+    double* imSines = ft.getImSinesX();
+    int freqDomainLen = ft.getFreqDomainLen();
+    printf("Fourrier transform =  Real{\n\t");
+    for (int index = 0; index < freqDomainLen; index++) {
+        printf("%0.02f, ", *realCosines);
+        realCosines++;
+    }
+    printf("\n}\n");
+    printf("                   =  Im{\n\t");
+    for (int index = 0; index < freqDomainLen; index++) {
+        printf("%0.02f, ", *imSines);
+        imSines++;
     }
     printf("\n}\n");
 }

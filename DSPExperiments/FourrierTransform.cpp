@@ -35,6 +35,40 @@ FourrierTransform::~FourrierTransform()
 }
 
 /*
+* Section 8.8: Discrete Fourrier transform
+*/
+void FourrierTransform::discreteTransform(double* xTime, int xTimeLen)
+{
+	// allocate and initialise members
+	clearMembers();
+	this->xRealCosinesLen = (xTimeLen / 2) + 1;
+	this->xRealCosines = new double[xRealCosinesLen];
+	this->xImSinesLen = this->xRealCosinesLen;
+	this->xImSines = new double[xImSinesLen];
+	this->timeDomainXLen = xTimeLen;
+	this->timeDomainX = new double[xTimeLen];
+
+	for (int index = 0; index < xRealCosinesLen; index++) {
+		xRealCosines[index] = 0.0;
+		xImSines[index] = 0.0;
+	}
+	for (int index = 0; index < xTimeLen; index++) {
+		timeDomainX[index] = *xTime;
+		xTime++;
+	}
+	
+	// CORRELATE xTimeDomain with xRealCosines and xImSines
+	for (int kFreqIndex = 0; kFreqIndex < xRealCosinesLen; kFreqIndex++) {
+		for (int iTimeIndex = 0; iTimeIndex < xTimeLen; iTimeIndex++) {
+			xRealCosines[kFreqIndex] = xRealCosines[kFreqIndex] + timeDomainX[iTimeIndex]
+				* cos((double)(2 * M_PI * kFreqIndex * iTimeIndex) / ((double)(xTimeLen + 1)));
+			xImSines[kFreqIndex] = xImSines[kFreqIndex] + timeDomainX[iTimeIndex]
+				* sin((double)(2 * M_PI * kFreqIndex * iTimeIndex) / ((double)(xTimeLen + 1)));
+		}
+	}
+}
+
+/*
 * Section 8/3
 */
 void FourrierTransform::inverseTransform(double* xReal, int xRealLen, double* xIm, int xImLen)
@@ -100,4 +134,19 @@ double* FourrierTransform::getTimeDomainX()
 int FourrierTransform::getTimeDomainXLen()
 {
 	return this->timeDomainXLen;
+}
+
+double* FourrierTransform::getRealConsinesX()
+{
+	return this->xRealCosines;
+}
+
+double* FourrierTransform::getImSinesX()
+{
+	return this->xImSines;
+}
+
+int FourrierTransform::getFreqDomainLen()
+{
+	return this->xImSinesLen;
 }

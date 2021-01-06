@@ -11,13 +11,18 @@ private:
 	double* xImSines = nullptr;
 	int xImSinesLen = 0;
 	void clearMembers();
-public:
-	~FourrierTransform();
-	FourrierTransform();
-	void inverseTransform(double* xReal, int xRealLen, double* xIm, int xImLen);
 	void inverseTransformByTimeDomain();
 	void inverseTransformByFrequencyDomain();
+public:
+	~FourrierTransform();
+	void discreteTransform(double* xTime, int xTimeLen);
+	FourrierTransform();
+	void inverseTransform(double* xReal, int xRealLen, double* xIm, int xImLen);
 	double* getTimeDomainX();
 	int getTimeDomainXLen();
+	double *getRealConsinesX();
+	double *getImSinesX();
+	int getFreqDomainLen();
+
 };
 
