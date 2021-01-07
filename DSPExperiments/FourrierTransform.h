@@ -4,6 +4,7 @@ using namespace std;
 class FourrierTransform
 {
 private:
+	int numberOfSamplesX = 0;
 	double* timeDomainX = nullptr;
 	int timeDomainXLen = 0;
 	double* xRealCosines = nullptr;

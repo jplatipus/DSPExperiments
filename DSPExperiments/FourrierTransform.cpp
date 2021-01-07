@@ -4,7 +4,7 @@
 
 /**
 * Fourrier Transorm class implementation 
-* Convolution as a class, based on Digital Signal Processing, by 
+* based on Digital Signal Processing, by 
  Steven W. Smith, chapter 8
 */
 
@@ -27,6 +27,10 @@ void FourrierTransform::clearMembers()
 	if (this->xRealCosines != nullptr) {
 		delete this->xRealCosines;
 	}
+	numberOfSamplesX = 0;
+	timeDomainXLen = 0;
+	xRealCosinesLen = 0;
+	xImSinesLen = 0;
 }
 
 FourrierTransform::~FourrierTransform()
@@ -41,9 +45,10 @@ void FourrierTransform::discreteTransform(double* xTime, int xTimeLen)
 {
 	// allocate and initialise members
 	clearMembers();
-	this->xRealCosinesLen = (xTimeLen / 2) + 1;
+	numberOfSamplesX = xTimeLen;
+	this->xRealCosinesLen = (numberOfSamplesX / 2) + 1;
 	this->xRealCosines = new double[xRealCosinesLen];
-	this->xImSinesLen = this->xRealCosinesLen;
+	this->xImSinesLen = (numberOfSamplesX / 2) + 1;
 	this->xImSines = new double[xImSinesLen];
 	this->timeDomainXLen = xTimeLen;
 	this->timeDomainX = new double[xTimeLen];
@@ -61,9 +66,9 @@ void FourrierTransform::discreteTransform(double* xTime, int xTimeLen)
 	for (int kFreqIndex = 0; kFreqIndex < xRealCosinesLen; kFreqIndex++) {
 		for (int iTimeIndex = 0; iTimeIndex < xTimeLen; iTimeIndex++) {
 			xRealCosines[kFreqIndex] = xRealCosines[kFreqIndex] + timeDomainX[iTimeIndex]
-				* cos((double)(2 * M_PI * kFreqIndex * iTimeIndex) / ((double)(xTimeLen + 1)));
+				* cos((double)(2.0 * M_PI * kFreqIndex * iTimeIndex) / ((double)numberOfSamplesX));
 			xImSines[kFreqIndex] = xImSines[kFreqIndex] + timeDomainX[iTimeIndex]
-				* sin((double)(2 * M_PI * kFreqIndex * iTimeIndex) / ((double)(xTimeLen + 1)));
+				* sin((double)(2.0 * M_PI * kFreqIndex * iTimeIndex) / ((double)numberOfSamplesX));
 		}
 	}
 }
@@ -78,37 +83,40 @@ void FourrierTransform::inverseTransform(double* xReal, int xRealLen, double* xI
 	this->clearMembers();
 	this->xRealCosines = new double[xRealLen];
 	this->xRealCosinesLen = xRealLen;
-	for (int index = 0; index < xRealLen; index++) {
-		this->xRealCosines[index] = xReal[index]/ xRealLen;
-	}
 	this->xImSines = new double[xImLen];
 	this->xImSinesLen = xImLen;
-	for (int index = 0; index < xImLen; index ++) {
-		this->xImSines[index] = -1*(xIm[index]/ xImLen);
-	}
-	this->timeDomainXLen = (xRealLen * 2) - 1;
+	this->timeDomainXLen = (xRealLen + xImLen) - 1;
 	this->timeDomainX = new double[this->timeDomainXLen];
-	for (int index = 0; index < this->timeDomainXLen; index++) {
-		this->timeDomainX[index] = 0;
+	for (int index = 0; index < xRealLen; index++) {
+		xRealCosines[index] = xReal[index] / xRealLen;
+		xImSines[index] = -1.0 * (xIm[index] / xImLen);
 	}
-	this->xRealCosines[0] = this->xRealCosines[0] / 2;
-	this->xRealCosines[xRealLen - 1] = xRealCosines[xRealLen - 1] / 2;
+	for (int index = 0; index < this->timeDomainXLen; index++) {
+		timeDomainX[index] = 0;
+	}
+	numberOfSamplesX = timeDomainXLen;
+
+	xRealCosines[0] = this->xRealCosines[0] / 2.0;
+	xRealCosines[xRealCosinesLen - 1] = xRealCosines[xRealCosinesLen - 1] / 2.0;
 
 	// two ways to calculate it:
-	
-	//inverseTransformByFrequencyDomain();
-	inverseTransformByTimeDomain();
+	if (true) {
+		inverseTransformByFrequencyDomain();
+	}
+	else {
+		inverseTransformByTimeDomain();
+	}
 }
 
 void FourrierTransform::inverseTransformByTimeDomain()
 {
 	// for each time domain amplitude, calculate the sum of all the associated frequency domain component values.
-	for (int iTimeIndex = 0; iTimeIndex < this->timeDomainXLen; iTimeIndex++) {
-		for (int kFreqIndex = 0; kFreqIndex < this->xRealCosinesLen; kFreqIndex++) {
-			this->timeDomainX[iTimeIndex] = this->timeDomainX[iTimeIndex] +
-				this->xRealCosines[kFreqIndex] * cos(2 * M_PI * kFreqIndex * iTimeIndex / ((double)(this->timeDomainXLen+1)));
-			this->timeDomainX[iTimeIndex] = this->timeDomainX[iTimeIndex] +
-				this->xImSines[kFreqIndex] * sin(2 * M_PI * kFreqIndex * iTimeIndex / ((double)this->timeDomainXLen+1));
+	for (int iTimeIndex = 0; iTimeIndex < timeDomainXLen; iTimeIndex++) {
+		for (int kFreqIndex = 0; kFreqIndex < xRealCosinesLen; kFreqIndex++) {
+			timeDomainX[iTimeIndex] = timeDomainX[iTimeIndex] +
+				xRealCosines[kFreqIndex] * cos((2.0 * M_PI * kFreqIndex * iTimeIndex) / ((double)numberOfSamplesX));
+			timeDomainX[iTimeIndex] = timeDomainX[iTimeIndex] +
+				xImSines[kFreqIndex] * sin((2.0 * M_PI * kFreqIndex * iTimeIndex) / ((double)numberOfSamplesX));
 
 		}
 	}
@@ -117,36 +125,36 @@ void FourrierTransform::inverseTransformByTimeDomain()
 void FourrierTransform::inverseTransformByFrequencyDomain()
 {
 	// for each frequency real and imaginary, add its component value to the time domains.
-	for (int kFreqIndex = 0; kFreqIndex < this->xRealCosinesLen; kFreqIndex++) {
-		for (int iTimeIndex = 0; iTimeIndex < this->timeDomainXLen; iTimeIndex++) {
-			this->timeDomainX[iTimeIndex] = this->timeDomainX[iTimeIndex]
-				+ this->xRealCosines[kFreqIndex] * cos(2 * M_PI * kFreqIndex * iTimeIndex / ((double)(this->timeDomainXLen+1)));
-			this->timeDomainX[iTimeIndex] = this->timeDomainX[iTimeIndex]
-				+ this->xImSines[kFreqIndex] * sin(2 * M_PI * kFreqIndex * iTimeIndex / ((double)(this->timeDomainXLen+1)));
+	for (int kFreqIndex = 0; kFreqIndex < xRealCosinesLen; kFreqIndex++) {
+		for (int iTimeIndex = 0; iTimeIndex < timeDomainXLen; iTimeIndex++) {
+			timeDomainX[iTimeIndex] = timeDomainX[iTimeIndex]
+				+ xRealCosines[kFreqIndex] * cos((2.0 * M_PI * kFreqIndex * iTimeIndex) / ((double)numberOfSamplesX));
+			timeDomainX[iTimeIndex] = timeDomainX[iTimeIndex]
+				+ xImSines[kFreqIndex] * sin((2.0 * M_PI * kFreqIndex * iTimeIndex) / ((double)numberOfSamplesX));
 		}
 	}
 }
 
 double* FourrierTransform::getTimeDomainX()
 {
-	return this->timeDomainX;
+	return timeDomainX;
 }
 int FourrierTransform::getTimeDomainXLen()
 {
-	return this->timeDomainXLen;
+	return timeDomainXLen;
 }
 
 double* FourrierTransform::getRealConsinesX()
 {
-	return this->xRealCosines;
+	return xRealCosines;
 }
 
 double* FourrierTransform::getImSinesX()
 {
-	return this->xImSines;
+	return xImSines;
 }
 
 int FourrierTransform::getFreqDomainLen()
 {
-	return this->xImSinesLen;
+	return xImSinesLen;
 }

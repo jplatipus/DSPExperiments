@@ -1,5 +1,8 @@
-// DSPExperiments.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+/* 
+* DSPExperiments.cpp : This file contains the 'main' function. Program execution begins and ends there.
+* based on Digital Signal Processing, by
+* Steven W.Smith
+*/
 
 #include <iostream>
 #include "Convolution.h"
@@ -39,21 +42,11 @@ void testFourrierTransform()
 {
     double reX[] = { 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0 };
     double imX[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-
-    FourrierTransform ift = FourrierTransform();
-    ift.inverseTransform(reX, 17, imX, 17);
-    double *x = ift.getTimeDomainX();
-    int xLen = ift.getTimeDomainXLen();
-    printf("inverse transform =  {\n\t");
-    for (int index = 0; index < xLen; index++) {
-        printf("%0.02f, ", *x);
-        x++;
-    }
-    printf("\n}\n");
+    double timeX[] = {32.0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0, 0,0, 0.0};
 
     FourrierTransform ft = FourrierTransform();
-    ft.discreteTransform(ift.getTimeDomainX(), ift.getTimeDomainXLen());
-    double *realCosines = ft.getRealConsinesX();
+    ft.discreteTransform(timeX, 32);
+    double* realCosines = ft.getRealConsinesX();
     double* imSines = ft.getImSinesX();
     int freqDomainLen = ft.getFreqDomainLen();
     printf("Fourrier transform =  Real{\n\t");
@@ -68,11 +61,23 @@ void testFourrierTransform()
         imSines++;
     }
     printf("\n}\n");
+
+    FourrierTransform ift = FourrierTransform();
+    ift.inverseTransform(reX, 17, imX, 17);
+    double *x = ift.getTimeDomainX();
+    int xLen = ift.getTimeDomainXLen();
+    printf("inverse transform =  {\n\t");
+    for (int index = 0; index < xLen; index++) {
+        printf("%0.02f, ", *x);
+        x++;
+    }
+    printf("\n}\n");
 }
 
 
 int main()
 {
+    testConvolution();
     testFourrierTransform();
 
 }
