@@ -38,6 +38,36 @@ void testConvolution()
     printf("\n}\n");
 }
 
+void testLecture4Example()
+{
+    std::cout << "Running Lecture 4, slide 28 Convolution Test\n";
+    double input[] = { 1.0, 0.0, 2.0, 3.0, 0.0, 1.0 };
+    double impulse[] = { 2.0, 0.0, 1.0 };
+    double* output = nullptr;
+
+    Convolution inc = Convolution(input, 5, impulse, 3);
+    inc.convoluteInputSide();
+    int outputLen = inc.getConvolutedOutLen();
+    output = inc.getConvolutedOutput();
+    printf("input side convolution =  {\n\t");
+    for (int index = 0; index < outputLen; index++) {
+        printf("%0.02f, ", *output);
+        output++;
+    }
+    printf("\n}\n");
+
+    Convolution outc = Convolution(input, 5, impulse, 3);
+    outc.convoluteOutputSide();
+    outputLen = outc.getConvolutedOutLen();
+    output = outc.getConvolutedOutput();
+    printf("output side convolution =  {\n\t");
+    for (int index = 0; index < outputLen; index++) {
+        printf("%0.02f, ", *output);
+        output++;
+    }
+    printf("\n}\n");
+}
+
 void testFourrierTransform()
 {
     double reX[] = { 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0 };
@@ -79,7 +109,7 @@ int main()
 {
     testConvolution();
     testFourrierTransform();
-
+    testLecture4Example();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
